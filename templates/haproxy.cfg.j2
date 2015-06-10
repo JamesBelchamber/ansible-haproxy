@@ -1,0 +1,49 @@
+global
+    log         127.0.0.1 local2
+    chroot      /var/lib/haproxy
+    pidfile     /var/run/haproxy.pid
+    maxconn     4000
+    user        haproxy
+    group       haproxy
+    daemon
+    stats socket /var/lib/haproxy/stats
+
+defaults
+    mode                    http
+    log                     global
+    option                  httplog
+    option                  dontlognull
+    option http-server-close
+    option forwardfor       except 127.0.0.0/8
+    option                  redispatch
+    retries                 3
+    timeout http-request    10s
+    timeout queue           1m
+    timeout connect         10s
+    timeout client          1m
+    timeout server          1m
+    timeout http-keep-alive 10s
+    timeout check           10s
+    maxconn                 3000
+
+{% for frontend in haproxy_frontends %}
+frontend  {{ frontend.name }}
+    bind {{ frontend.ip|default('*') }}:{{ frontend.port|default('80') }}
+{% if frontend.vhosts is defined %}
+{% for vhost in frontend.vhosts %}
+    acl {{ vhost.backend }} hdr(host) -i {{ vhost.host }}
+    use_backend {{ vhost.backend }} if {{ vhost.backend }}
+{% endfor %}
+{% endif %}
+{% if default_backend is defined %}
+    default_backend             {{ frontend.default_backend }}
+{% endif %}
+{% endfor %}
+
+{% for backend in haproxy_backends %}
+backend {{ backend.name }}
+    balance {{ backend.balance|default('roundrobin') }}
+{% for server in backend.servers %}
+    server      static {{ server.ip }}:{{ server.port|default('80') }} check
+{% endfor %}
+{% endfor %}
