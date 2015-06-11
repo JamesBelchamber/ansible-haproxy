@@ -27,11 +27,12 @@ haproxy_frontends:
 haproxy_backends:
   - name: acoolcom              # A natural name for each backend. Required.
     balance: first              # The algorithm used to select a server. Defaults to 'roundrobin'
-    servers:                    # A list of servers in the backend pool. Required.
-    - name: coolback1           # A natural name for each server. Required.
-      ip: 192.168.2.1           # Server IP. Required.
-      port: 8080                # Server port. Defaults to '80'
 ````
+
+Defining Backends
+-----------------
+
+Back-end servers are defined using host variables. To add a server to a back-end, add the `haproxy_backend` variable to the server in your inventory and set it to match the backend server defined in the vars file. Optionally, a `haproxy_port` variable will set the port. Of course, this can be set at a group level as well.
 
 Example Playbook
 ----------------

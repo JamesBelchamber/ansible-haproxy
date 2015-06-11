@@ -43,7 +43,8 @@ frontend  {{ frontend.name }}
 {% for backend in haproxy_backends %}
 backend {{ backend.name }}
     balance {{ backend.balance|default('roundrobin') }}
-{% for server in backend.servers %}
-    server      static {{ server.ip }}:{{ server.port|default('80') }} check
-{% endfor %}
+{% for hosts in groups['all'] %}
+{% if hostvars[host]['haproxy_backend'] = backend %}
+    server      static {{ hostvars[host]['ansible_ssh_host'] }}:{{ hostvars[host]['haproxy_port']|default('80') }} check
+{% endif %}
 {% endfor %}
