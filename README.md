@@ -18,6 +18,8 @@ haproxy_frontends:
   - name: my-cool-frontend      # A natural name for each frontend. Required.
     ip: '192.168.1.1'           # The IP this frontend should bind to. Defaults to '*'
     port: '443'                 # The port this frontend should bind to. Defaults to '80'
+    ssl_certificate: '/certs/'  # One or more SSL certificates, for SSL offloading. This can be a single cert, a list of certs or a directory which contains all the certs. Optional.
+    ssl_ciphers: 'ECDHE-RSA-AES256-SHA:RC4-SHA' # A string of the SSL ciphers acceptable to HAProxy. Optional.
     vhosts:                     # A 'vhost', to be configured using ACLs. Optional.
     - host: a.cool.com          # A host name for the vhost. Required.
       backend: acoolcom         # The backend this vhost should proxy to. Required.
@@ -28,6 +30,8 @@ haproxy_backends:
   - name: acoolcom              # A natural name for each backend. Required.
     balance: first              # The algorithm used to select a server. Defaults to 'roundrobin'
 ````
+
+`haproxy_frontend_port` and `haproxy_backend_port` are will set the default ports across the whole play. `haproxy_ssl_ciphers` will set the default ciphers for all frontends.
 
 Defining Backends
 -----------------
