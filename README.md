@@ -25,10 +25,23 @@ haproxy_frontends:
       backend: acoolcom         # The backend this vhost should proxy to. Required.
     default_backend: fourohfour # The default backend to be proxied to, if nothing else matches. Optional.
 ````
+TCP mode example:
+````
+haproxy_frontends:
+  - name: my-cool-frontend      # Name for the frontend
+    ip: '172.16.1.1'            # The IP this frontend should bind to. Defaults to '*'
+    port: '5432'                # The port this frontend should bind to. Defaults to '80'
+    tcp_mode: True              # The TCP mode will be enabled and used instead of the default HTTP
+````
 ````
 haproxy_backends:
   - name: acoolcom              # A natural name for each backend. Required.
     balance: first              # The algorithm used to select a server. Defaults to 'roundrobin'
+    servers:                    # List of the servers if host_vars is not used
+      - name: one.abc.com       # Name for the server in the pool
+        port: 80                # Port number of the application
+      - name: two.abc.com
+        port: 80
 ````
 
 `haproxy_frontend_port` and `haproxy_backend_port` are will set the default ports across the whole play. `haproxy_ssl_ciphers` will set the default ciphers for all frontends.

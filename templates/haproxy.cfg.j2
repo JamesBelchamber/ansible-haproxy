@@ -39,11 +39,18 @@ frontend  {{ frontend.name }}
 {% if frontend.default_backend is defined %}
     default_backend {{ frontend.default_backend }}
 {% endif %}
+{% if frontend.tcp_mode is defined %}
+{% if frontend.tcp_mode %}
+    mode tcp
+{% endif %}
+{% endif %}
+
 {% endfor %}
 
 {% for backend in haproxy_backends %}
 backend {{ backend.name }}
     balance {{ backend.balance|default('roundrobin') }}
+{# Using host_vars #}
 {% for host in groups['all'] %}
 {% if hostvars[host]['haproxy_backend'] is defined %}
 {% if hostvars[host]['haproxy_backend'] == backend.name %}
@@ -51,4 +58,11 @@ backend {{ backend.name }}
 {% endif %}
 {% endif %}
 {% endfor %}
+{# Using group_vars #}
+{% if backend.servers is defined %}
+{% for server in backend.servers %}
+    server      static {{ server.name }}:{{ server.port }}
+{% endfor %}
+{% endif %}
+
 {% endfor %}
