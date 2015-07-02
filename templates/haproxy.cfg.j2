@@ -49,13 +49,16 @@ backend {{ backend.name }}
 {% for host in groups['all'] %}
 {% if hostvars[host]['haproxy_backend'] is defined %}
 {% if hostvars[host]['haproxy_backend'] == backend.name %}
-    server      static {{ hostvars[host]['ansible_ssh_host'] }}:{{ hostvars[host]['haproxy_port']|default(haproxy_backend_port) }} check
+    server      {{ host }} {{ hostvars[host]['ansible_ssh_host'] }}:{{ hostvars[host]['haproxy_port']|default(haproxy_backend_port) }} check
 {% endif %}
 {% endif %}
 {% endfor %}
+{% if backend.tcp_mode %}
+    mode tcp
+{% endif %}
 {% if backend.servers is defined %}
 {% for server in backend.servers %}
-    server      static {{ server.address }}:{{ server.port|default(haproxy_backend_port) }} check
+    server      {{ server.name }} {{ server.address|default(server.name) }}:{{ server.port|default(haproxy_backend_port) }} check
 {% endfor %}
 {% endif %}
 {% endfor %}

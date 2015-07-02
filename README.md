@@ -30,8 +30,10 @@ haproxy_frontends:
 haproxy_backends:
   - name: acoolcom              # A natural name for each backend. Required.
     balance: first              # The algorithm used to select a server. Defaults to 'roundrobin'.
+    tcp_mode: True              # The TCP mode will be enabled and used instead of the default HTTP
     servers:                    # List of the servers. Optional, compliments backends defined as host variables.
-      - address: 192.168.2.1    # Address for the server in the pool. Optional.
+      - name: harold.local      # Name for the server in the pool. Required.
+        address: 192.168.2.1    # Address for the server in the pool. Optional.
         port: 80                # Port number of the service. Optional.
 ````
 
