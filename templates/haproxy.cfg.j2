@@ -35,11 +35,14 @@ frontend  {{ frontend.name }}
     use_backend {{ vhost.backend }} if {{ vhost.backend }}
 {% endfor %}
 {% endif %}
+
 {% if frontend.default_backend is defined %}
     default_backend {{ frontend.default_backend }}
 {% endif %}
+{% if frontend.tcp_mode is defined %}
 {% if frontend.tcp_mode %}
     mode tcp
+{% endif %}
 {% endif %}
 {% endfor %}
 
@@ -53,8 +56,10 @@ backend {{ backend.name }}
 {% endif %}
 {% endif %}
 {% endfor %}
+{% if backend.tcp_mode is defined%}
 {% if backend.tcp_mode %}
     mode tcp
+{% endif %}
 {% endif %}
 {% if backend.servers is defined %}
 {% for server in backend.servers %}
