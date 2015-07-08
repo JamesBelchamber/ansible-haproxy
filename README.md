@@ -20,28 +20,19 @@ haproxy_frontends:
     port: '443'                 # The port this frontend should bind to. Defaults to '80'
     ssl_certificate: '/certs/'  # One or more SSL certificates, for SSL offloading. This can be a single cert, a list of certs or a directory which contains all the certs. Optional.
     ssl_ciphers: 'ECDHE-RSA-AES256-SHA:RC4-SHA' # A string of the SSL ciphers acceptable to HAProxy. Optional.
+    tcp_mode: True              # Enables TCP mode. Optional, conflicts with vhosts.
     vhosts:                     # A 'vhost', to be configured using ACLs. Optional.
     - host: a.cool.com          # A host name for the vhost. Required.
       backend: acoolcom         # The backend this vhost should proxy to. Required.
     default_backend: fourohfour # The default backend to be proxied to, if nothing else matches. Optional.
 ````
-TCP mode example:
-````
-haproxy_frontends:
-  - name: my-cool-frontend      # Name for the frontend
-    ip: '172.16.1.1'            # The IP this frontend should bind to. Defaults to '*'
-    port: '5432'                # The port this frontend should bind to. Defaults to '80'
-    tcp_mode: True              # The TCP mode will be enabled and used instead of the default HTTP
-````
 ````
 haproxy_backends:
   - name: acoolcom              # A natural name for each backend. Required.
-    balance: first              # The algorithm used to select a server. Defaults to 'roundrobin'
-    servers:                    # List of the servers if host_vars is not used
-      - name: one.abc.com       # Name for the server in the pool
-        port: 80                # Port number of the application
-      - name: two.abc.com
-        port: 80
+    balance: first              # The algorithm used to select a server. Defaults to 'roundrobin'.
+    servers:                    # List of the servers. Optional, compliments backends defined as host variables.
+      - address: 192.168.2.1    # Address for the server in the pool. Optional.
+        port: 80                # Port number of the service. Optional.
 ````
 
 `haproxy_frontend_port` and `haproxy_backend_port` are will set the default ports across the whole play. `haproxy_ssl_ciphers` will set the default ciphers for all frontends.

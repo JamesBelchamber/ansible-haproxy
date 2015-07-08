@@ -29,7 +29,6 @@ defaults
 {% for frontend in haproxy_frontends %}
 frontend  {{ frontend.name }}
     bind {{ frontend.ip|default('*') }}:{{ frontend.port|default(haproxy_frontend_port) }}{% if frontend.ssl_certificate is defined %} ssl{% if frontend.ssl_certificate is mapping %}{% for cert in frontend.ssl_certificate %} crt {{ cert }}{% endfor %}{% endif %}{% if frontend.ssl_certificate is not mapping %} crt {{ frontend.ssl_certificate }}{% endif %} ciphers {{ frontend.ssl_ciphers|default(haproxy_default_ciphers) }}{% endif %}
-
 {% if frontend.vhosts is defined %}
 {% for vhost in frontend.vhosts %}
     acl {{ vhost.backend }} hdr(host) -i {{ vhost.host }}
@@ -39,18 +38,14 @@ frontend  {{ frontend.name }}
 {% if frontend.default_backend is defined %}
     default_backend {{ frontend.default_backend }}
 {% endif %}
-{% if frontend.tcp_mode is defined %}
 {% if frontend.tcp_mode %}
     mode tcp
 {% endif %}
-{% endif %}
-
 {% endfor %}
 
 {% for backend in haproxy_backends %}
 backend {{ backend.name }}
     balance {{ backend.balance|default('roundrobin') }}
-{# Using host_vars #}
 {% for host in groups['all'] %}
 {% if hostvars[host]['haproxy_backend'] is defined %}
 {% if hostvars[host]['haproxy_backend'] == backend.name %}
@@ -58,11 +53,9 @@ backend {{ backend.name }}
 {% endif %}
 {% endif %}
 {% endfor %}
-{# Using group_vars #}
 {% if backend.servers is defined %}
 {% for server in backend.servers %}
-    server      static {{ server.name }}:{{ server.port }}
+    server      static {{ server.address }}:{{ server.port|default(haproxy_backend_port) }} check
 {% endfor %}
 {% endif %}
-
 {% endfor %}
