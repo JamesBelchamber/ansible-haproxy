@@ -29,7 +29,6 @@ defaults
 {% for frontend in haproxy_frontends %}
 frontend  {{ frontend.name }}
     bind {{ frontend.ip|default('*') }}:{{ frontend.port|default(haproxy_frontend_port) }}{% if frontend.ssl_certificate is defined %} ssl{% if frontend.ssl_certificate is mapping %}{% for cert in frontend.ssl_certificate %} crt {{ cert }}{% endfor %}{% endif %}{% if frontend.ssl_certificate is not mapping %} crt {{ frontend.ssl_certificate }}{% endif %} ciphers {{ frontend.ssl_ciphers|default(haproxy_default_ciphers) }}{% endif %}
-
 {% if frontend.vhosts is defined %}
 {% for vhost in frontend.vhosts %}
     acl {{ vhost.backend }} hdr(host) -i {{ vhost.host }}
@@ -53,7 +52,7 @@ backend {{ backend.name }}
 {% for host in groups['all'] %}
 {% if hostvars[host]['haproxy_backend'] is defined %}
 {% if hostvars[host]['haproxy_backend'] == backend.name %}
-    server      {{ host }} {{ hostvars[host]['ansible_ssh_host'] }}:{{ hostvars[host]['haproxy_port']|default(haproxy_backend_port) }} check
+    server      {{ host }} {{ hostvars[host][primary_nic|default('ansible_eth0')]['ipv4']['address'] }}:{{ hostvars[host]['haproxy_port']|default(haproxy_backend_port) }} check
 {% endif %}
 {% endif %}
 {% endfor %}

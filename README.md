@@ -42,7 +42,7 @@ haproxy_backends:
 Defining Backends
 -----------------
 
-Back-end servers are defined using host variables. To add a server to a back-end, add the `haproxy_backend` variable to the server in your inventory and set it to match the backend server defined in the vars file. Optionally, a `haproxy_port` variable will set the port. Of course, this can be set at a group level as well.
+Back-end servers are defined using host variables. To add a server to a back-end, add the `haproxy_backend` variable to the server in your inventory and set it to match the backend server defined in the vars file. The IP address used will be the `ansible_eth0` IP by default, though this can be configured using the `primary_nic` variable. Optionally, a `haproxy_port` variable will set the port. Of course, this can be set at a group level as well.
 
 Example Playbook
 ----------------
