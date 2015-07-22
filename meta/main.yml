@@ -12,3 +12,5 @@ galaxy_info:
   - clustering
   - networking
   - web
+dependencies:
+  - { role: tcomerma.keepalived, keepalived_shared_ip: "{{ haproxy_vip }}", when: haproxy_vip is defined }
