@@ -52,8 +52,15 @@ backend {{ backend.name }}
     balance {{ backend.balance|default('roundrobin') }}
 {% for host in groups['all'] %}
 {% if hostvars[host]['haproxy_backend'] is defined %}
+{% if hostvars[host]['haproxy_backend'] is mapping %}
+{% for haproxy-backend in hostvars[host]['haproxy_backend'] %}
+{% if haproxy-backend == backend.name %}
+    server      {{ host }} {{ hostvars[host][primary_nic|default('ansible_eth0')]['ipv4']['address'] }}:{{ backend.port|default(haproxy_backend_port) }} check
+{% endif %}
+{% endfor %}
+{% endif %}
 {% if hostvars[host]['haproxy_backend'] == backend.name %}
-    server      {{ host }} {{ hostvars[host][primary_nic|default('ansible_eth0')]['ipv4']['address'] }}:{{ hostvars[host]['haproxy_port']|default(haproxy_backend_port) }} check
+    server      {{ host }} {{ hostvars[host][primary_nic|default('ansible_eth0')]['ipv4']['address'] }}:{{ backend.port|default(haproxy_backend_port) }} check
 {% endif %}
 {% endif %}
 {% endfor %}
@@ -64,7 +71,7 @@ backend {{ backend.name }}
 {% endif %}
 {% if backend.servers is defined %}
 {% for server in backend.servers %}
-    server      {{ server.name }} {{ server.address|default(server.name) }}:{{ server.port|default(haproxy_backend_port) }} check
+    server      {{ server.name }} {{ server.address|default(server.name) }}:{{ backend.port|default(haproxy_backend_port) }} check
 {% endfor %}
 {% endif %}
 {% endfor %}
