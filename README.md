@@ -31,10 +31,10 @@ haproxy_backends:
   - name: acoolcom              # A natural name for each backend. Required.
     balance: first              # The algorithm used to select a server. Defaults to 'roundrobin'.
     tcp_mode: True              # The TCP mode will be enabled and used instead of the default HTTP. Optional.
+    port: 80                    # Port number of the service. Optional.
     servers:                    # List of the servers. Optional, compliments backends defined as host variables.
       - name: harold.local      # Name for the server in the pool. Required.
         address: 192.168.2.1    # Address for the server in the pool. Optional.
-        port: 80                # Port number of the service. Optional.
 ````
 
 `haproxy_frontend_port` and `haproxy_backend_port` are will set the default ports across the whole play. `haproxy_ssl_ciphers` will set the default ciphers for all frontends.
@@ -42,7 +42,7 @@ haproxy_backends:
 Defining Backends
 -----------------
 
-Back-end servers are defined using host variables. To add a server to a back-end, add the `haproxy_backend` variable to the server in your inventory and set it to match the backend server defined in the vars file. The IP address used will be the `ansible_eth0` IP by default, though this can be configured using the `primary_nic` variable. Optionally, a `haproxy_port` variable will set the port. Of course, this can be set at a group level as well.
+Back-end servers are defined using host variables. To add a server to a back-end, add the `haproxy_backend` variable to the server in your inventory and set it to match the backend server defined in the vars file - for servers with multiple backends, this can be a list. The IP address used will be the `ansible_eth0` IP by default, though this can be configured using the `primary_nic` variable. Of course, this can be set at a group level as well.
 
 High Availability
 -----------------
